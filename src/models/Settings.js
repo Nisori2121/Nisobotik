@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const Settings = new Schema({
     id: Number,
+    currencyName: String,
     gifs: {
         kissGifs: Array,
         eatGifs: Array,

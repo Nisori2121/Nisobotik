@@ -42,6 +42,9 @@ module.exports = {
 
     await interaction.deferReply();
 
+    const settingSchema =
+    (await Settings.findOne({ id: 0 })) ?? (await Settings.create({ id: 0 }));
+
     const products = await Product.find();
 
     const generateBuyButtons = async (start) => {
@@ -80,7 +83,7 @@ module.exports = {
                           product.content.name
                         } \n Описание товара: **${
                           product.content.description
-                        }** \n \n Цена: **${product.price}** \n`
+                        }** \n \n Цена: **${product.price}** ${settingSchema.currencyName ?? "монет"} \n`
                     )
                     .join("\n")
                 : `**Пока-что** ничего нет.`
@@ -207,7 +210,7 @@ module.exports = {
                 new EmbedBuilder()
                   .setTitle("Покупка товара")
                   .setDescription(
-                    `${i.user}, вы **успешно** приобрели данный товар за **${findProduct.price}** \n \n Товар: **${findProduct.content.product}**`
+                    `${i.user}, вы **успешно** приобрели данный товар за **${findProduct.price}** ${settingSchema.currencyName ?? "монет"} \n \n Товар: **${findProduct.content.product}**`
                   )
                   .setColor("#2f3136")
                   .setThumbnail(interaction.user.displayAvatarURL()),
