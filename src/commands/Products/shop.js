@@ -43,7 +43,7 @@ module.exports = {
     await interaction.deferReply();
 
     const settingSchema =
-    (await Settings.findOne({ id: 0 })) ?? (await Settings.create({ id: 0 }));
+      (await Settings.findOne({ id: 0 })) ?? (await Settings.create({ id: 0 }));
 
     const products = await Product.find();
 
@@ -83,7 +83,9 @@ module.exports = {
                           product.content.name
                         } \n Описание товара: **${
                           product.content.description
-                        }** \n \n Цена: **${product.price}** ${settingSchema.currencyName ?? "монет"} \n`
+                        }** \n \n Цена: **${product.price}** ${
+                          settingSchema.currencyName ?? "монет"
+                        } \n`
                     )
                     .join("\n")
                 : `**Пока-что** ничего нет.`
@@ -202,31 +204,43 @@ module.exports = {
             });
           } else if (userSchema.currency >= findProduct.price) {
             userSchema.currency -= findProduct.price;
-            if(userSchema.currency < 0) userSchema.currency = 0
-            userSchema.save().catch(() => {});
+            userSchema.purchasedHistory.push(
+              `${findProduct.content.name} - за ${findProduct.price} ${
+                settingSchema.currencyName ?? "монет"
+              }`
+            );
+            if (userSchema.currency < 0) userSchema.currency = 0;
+            await userSchema.save().catch(() => {});
 
             await i.reply({
               embeds: [
                 new EmbedBuilder()
                   .setTitle("Покупка товара")
                   .setDescription(
-                    `${i.user}, вы **успешно** приобрели данный товар за **${findProduct.price}** ${settingSchema.currencyName ?? "монет"} \n \n Товар: **${findProduct.content.product}**`
+                    `${i.user}, вы **успешно** приобрели данный товар за **${
+                      findProduct.price
+                    }** ${
+                      settingSchema.currencyName ?? "монет"
+                    } \n \n Товар: **${findProduct.content.product}**`
                   )
                   .setColor("#2f3136")
                   .setThumbnail(interaction.user.displayAvatarURL()),
               ],
-              ephemeral: true
+              ephemeral: true,
             });
+            if (findProduct.roleAfterBought) {
+              const role = await interaction.guild.roles.fetch(
+                findProduct.roleAfterBought
+              );
+              await i.member.roles.add(role).catch(() => {});
+            }
           }
         }
       }
     });
     collector.on("ignore", async (i) => {
       await i.deferUpdate();
-      console.log("ignored");
     });
-    collector.on("end", (collected) => {
-      console.log("end");
-    });
+    collector.on("end", (collected) => {});
   },
 };
