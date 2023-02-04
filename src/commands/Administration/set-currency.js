@@ -19,7 +19,7 @@ module.exports = {
     const settingSchema =
       (await Settings.findOne({ id: 0 })) ?? (await Settings.create({ id: 0 }));
 
-    settingSchema?.currencyName = currencyName
+    settingSchema.currencyName = currencyName
     settingSchema.save().catch((err) => console.log(err))
 
     await interaction.reply({
