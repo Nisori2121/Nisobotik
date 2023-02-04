@@ -61,7 +61,7 @@ module.exports = {
 
       try {
         return new EmbedBuilder()
-          .setTitle("История покупок")
+          .setTitle(`История покупок - ${target.tag}`)
           .setDescription(
             `${
               current.length

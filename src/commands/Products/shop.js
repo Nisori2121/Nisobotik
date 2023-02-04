@@ -6,6 +6,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const Product = require("../../models/Product");
+const Settings = require("../../models/Settings");
 const User = require("../../models/User");
 
 module.exports = {

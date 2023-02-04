@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const Settings = require("../../models/Settings");
 const User = require("../../models/User");
 
 module.exports = {
