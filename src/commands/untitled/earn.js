@@ -11,13 +11,15 @@ module.exports = {
       (await User.findOne({ userId: interaction.user.id })) ??
       (await User.create({ userId: interaction.user.id }));
 
-    if (28800000  > Number(Date.now() - userSchema.earnCooldown)) {
+    if (28800000 > Number(Date.now() - userSchema.earnCooldown)) {
       await interaction.reply({
         content: "Повторите данную команду позже!",
         ephemeral: true,
       });
       return;
     }
+    const settingSchema =
+      (await Settings.findOne({ id: 0 })) ?? (await Settings.create({ id: 0 }));
 
     let earned = 10;
 
@@ -40,7 +42,7 @@ module.exports = {
           .setDescription(
             `${interaction.user}, вы смогли заработать **${Math.round(
               earned
-            )}**!`
+            )}** ${settingSchema.currencyName ?? "монет"}!`
           )
           .setColor("#2f3136")
           .setImage(

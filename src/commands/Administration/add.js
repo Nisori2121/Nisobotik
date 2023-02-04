@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} = require("discord.js");
 const { default: mongoose } = require("mongoose");
 const Product = require("../../models/Product");
 
@@ -28,6 +32,11 @@ module.exports = {
     )
     .addStringOption((option) =>
       option.setName("описание").setDescription("Введите описание для товара")
+    )
+    .addRoleOption((option) =>
+      option
+        .setName("роль")
+        .setDescription("Будет выдаваться после покупки товара")
     ),
   async execute(interaction, client) {
     const name = interaction.options.getString("название");
@@ -36,9 +45,12 @@ module.exports = {
       "Описание товара отсутствует";
     const price = interaction.options.getNumber("цена", true);
     const product = interaction.options.getString("товар");
+    const role = interaction.options.getRole("роль", false);
 
-    await Product.create({ _id:  mongoose.Types.ObjectId(),
+    await Product.create({
+      _id: mongoose.Types.ObjectId(),
       content: { name, description, product },
+      roleAfterBought: role ? role.id : "",
       price,
     });
 
@@ -46,7 +58,9 @@ module.exports = {
       embeds: [
         new EmbedBuilder()
           .setTitle("Создание нового товара")
-          .setDescription(`${interaction.user}, новый товар был **успешно** создан!`)
+          .setDescription(
+            `${interaction.user}, новый товар был **успешно** создан!`
+          )
           .setColor("#2f3136")
           .setThumbnail(interaction.user.displayAvatarURL()),
       ],
